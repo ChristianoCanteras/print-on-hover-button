@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Print on hover effect</title>
+    <style>
+      .phone {
+        width: max-content;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 40px;
+        background-color: blue;
+        font-size: 17px;
+        font-family: Arial, Helvetica, sans-serif;
+        text-align: center;
+        color: #eee;
+        text-decoration: none;
+        border-radius: 20px;
+      }
+      .phone:hover {
+        color: #fff;
+      }
+
+      .phone img {
+        height: 17px;
+      }
+    </style>
+  </head>
+  <body>
+    <a href="tel:+48 123 456 789" class="phone" id="phone"
+      ><img src="./phone.svg" alt="" /><span>123 456 789</span></a
+    >
+
+    <script>
+      (function phoneButton() {
+        class PhoneButton {
+          constructor(selector, latency) {
+            this.container = document.getElementById(selector);
+            this.latency = latency;
+            this.number = this.container.children[1].innerText;
+            this.icon = this.container.children[0];
+            this.actualState = [];
+            this.index = 0;
+            this.interval = null;
+            this.prepareButton();
+            this.handleMouseOver();
+            this.handleMouseOut();
+          }
+
+          prepareButton() {
+            this.container.innerHTML = "";
+            this.container.appendChild(this.icon);
+            this.container.style.cssText = `height:${this.container.offsetHeight}px; min-width:${this.container.offsetWidth}px;`;
+          }
+          handleMouseOver() {
+            this.container.addEventListener("mouseover", () => {
+              if (window.innerWidth > 450) {
+                clearInterval(this.interval);
+                this.interval = setInterval(() => {
+                  if (this.index < this.number.length) {
+                    this.actualState[this.index] = this.number[this.index];
+                    this.container.textContent = this.actualState.join("");
+                    this.index++;
+                  } else {
+                    clearInterval(this.interval);
+                  }
+                }, this.latency);
+              }
+            });
+          }
+          handleMouseOut() {
+            this.container.addEventListener("mouseout", () => {
+              if (window.innerWidth > 450) {
+                clearInterval(this.interval);
+                this.interval = setInterval(() => {
+                  if (this.index != 0) {
+                    this.actualState.pop();
+                    this.container.textContent = this.actualState.join("");
+                    this.index--;
+                  } else {
+                    this.container.appendChild(this.icon);
+                    clearInterval(this.interval);
+                  }
+                }, this.latency);
+              }
+            });
+          }
+        }
+
+        const newButton = new PhoneButton("phone", 50);
+      })();
+    </script>
+  </body>
+</html>
